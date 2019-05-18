@@ -10,7 +10,7 @@ from drl.agent import Agent
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def meta_space(name_values={'lr': [5e-8, 5e-1]}, n=5, d=0):
+def hyper_space(name_values={'lr': [5e-8, 5e-1]}, n=5, d=0):
     property_matrix = np.zeros([len(name_values), n])
     for idx, key in enumerate(name_values):
         f, t = name_values[key]
@@ -64,7 +64,8 @@ class DqnAgentProperties:
 
 
 class DqnAgent(Agent):
-    """Interacts with and learns from the environment."""
+    """This class is based on a Deep Reinforcement Learning Nanodegree provided by Udacity.
+       Agent interacts with and learns from the environment."""
 
     def __init__(self, state_size, action_size, seed, properties=DqnAgentProperties()):
         """Initialize an Agent object.
