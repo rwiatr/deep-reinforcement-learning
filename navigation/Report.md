@@ -31,7 +31,7 @@ environment achieving a average reward of 13+ over last 100 epochs and 270 epoch
 | D | 0.01 | 0.05 |
 | E | 0.01 | 1.0 |
 
-![400 iterations averaged over 100 steps][result.png]
+![400 iterations averaged over 100 steps](result.png)
 
 &epsilon; step of 0.05 means that &epsilon; will reach minimum after 20 steps.
 The results show that agents having lower target &epsilon; achieve better final score.
