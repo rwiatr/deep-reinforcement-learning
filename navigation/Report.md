@@ -31,10 +31,14 @@ environment achieving a average reward of 13+ over last 100 epochs and 270 epoch
 | D | 0.01 | 0.05 |
 | E | 0.01 | 1.0 |
 
-The results show that the agent trains faster for lower &epsilon;. This may mean the environment is simple, repetitive and 
-requires limited exploration. Agent D is the best performing agent. It has the lowest target &epsilon; and it gets to it after
-only 20 steps. Agent E is one of the better ones and it achieves target &epsilon in one step.
-This means that the &epsilon; decay strategy very little difference for this task.
+![400 iterations averaged over 100 steps][result.png]
+
+&epsilon; step of 0.05 means that &epsilon; will reach minimum after 20 steps.
+The results show that agents having lower target &epsilon; achieve better final score.
+This can be explained by the fact that less randomness in the final stages allows to exploit
+the policy of the agent.
+The results show also that faster bigger &epsilon; step is positive on learning rate.
+This may mean the environment is simple, repetitive and requires limited exploration.
 
 ## Future work
  - [ ] Implement CNN as input
