@@ -44,7 +44,7 @@ class ScorePlot:
                 score = transform(mode, score)
             plt.plot(np.arange(len(score)), score, label=name)
 
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05))
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
         plt.ylabel('Score')
         plt.xlabel('Episode #')
         plt.show()
