@@ -149,7 +149,7 @@ class DqnAgent(Agent):
         loss = F.mse_loss(Q_expected, Q_targets)
         # Minimize the loss
         self.optimizer.zero_grad()
-        loss.backward()
+        loss.backward()  # qnetwork_local learning step
         self.optimizer.step()
 
         # ------------------- update target network ------------------- #
