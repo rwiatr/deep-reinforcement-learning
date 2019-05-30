@@ -1,6 +1,6 @@
 from collections import deque
 
-from drl.agent import Agent
+from drl.dql.agent import Agent
 from drl.benchmark import ScorePlot
 import numpy as np
 

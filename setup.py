@@ -6,6 +6,6 @@ setup(
     packages=['drl'],
     author='roman.wiatr',
     install_requires=[
-        'unityagents', 'pytorch', 'numpy', 'matplotlib'
+        'gym', 'unityagents', 'pytorch', 'numpy', 'matplotlib'
     ]
 )

@@ -1,6 +1,6 @@
 import numpy as np
 
-from drl.agent import Agent
+from drl.dql.agent import Agent
 
 
 class RandomAgent(Agent):

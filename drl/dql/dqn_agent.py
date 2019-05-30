@@ -5,7 +5,7 @@ from collections import namedtuple, deque
 import torch
 import torch.optim as optim
 
-from drl.agent import Agent
+from drl.dql.agent import Agent
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
