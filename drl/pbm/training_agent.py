@@ -97,8 +97,10 @@ class Model(nn.Module):
         import gym
         if type(env.action_space) is gym.spaces.discrete.Discrete:
             self.a_size = env.action_space.n
+            self.discrete_action_space = True
         else:
             self.a_size = env.action_space.shape[0]
+            self.discrete_action_space = False
         # define layers
         self.fc1 = nn.Linear(self.s_size, self.h_size)
         self.fc2 = nn.Linear(self.h_size, self.a_size)
@@ -106,6 +108,10 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.tanh(self.fc2(x))
+
+        if self.discrete_action_space:
+            return x.argmax().cpu().data.item()
+
         return x.cpu().data
 
     def set_weights(self, weights):

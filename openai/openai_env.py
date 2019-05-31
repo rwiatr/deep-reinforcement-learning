@@ -26,7 +26,7 @@ class EnvHelper:
     def load(self, name=None):
         self.agent.load('saved', name)
 
-    def run_until(self, episodes=None, target_mean_reward=None, print_every=1):
+    def run_until(self, episodes=None, target_mean_reward=float('inf'), print_every=1):
         episode = 1
         scores_deque = deque(maxlen=100)
         scores = []

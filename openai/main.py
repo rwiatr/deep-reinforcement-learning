@@ -14,7 +14,7 @@ from openai.openai_env import EnvHelper
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-helper = EnvHelper()
+helper = EnvHelper(env_name="CartPole-v0")
 
 TRAIN_EPISODES = 400
 TEST_EPISODES = 400
