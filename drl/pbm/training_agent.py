@@ -29,7 +29,7 @@ class TrainingAgent(pbm.Agent):
 
     def __init__(self, model, device, properties=TrainingAgentProperties(), best_weight=None):
         self.properties = properties
-        self.model = model
+        self.model = model.to(device)
         self.device = device
         self.pop_size = properties.pop_size
         self.gamma = properties.gamma

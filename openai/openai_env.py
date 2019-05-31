@@ -36,7 +36,7 @@ class EnvHelper:
             reward = self.agent.train_epoch(self.env)
             scores_deque.append(reward)
             scores.append(reward)
-            
+
             if episode % print_every == 0:
                 print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
 
