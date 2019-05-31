@@ -31,18 +31,20 @@ class EnvHelper:
     def run_until(self, episodes=None, target_mean_reward=None, print_every=1):
         episode = 1
         scores_deque = deque(maxlen=100)
-
+        scores = []
         while True:
             reward = self.agent.train_epoch(self.env)
             scores_deque.append(reward)
-            self.score_plot.add(self.name, reward)
-
+            scores.append(reward)
+            
             if episode % print_every == 0:
                 print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
 
-            if episode == episodes or target_mean_reward == np.mean(scores_deque):
+            if episode == episodes or target_mean_reward >= np.mean(scores_deque):
                 break
             episode += 1
+
+        self.score_plot.add(self.name, scores)
 
         if np.mean(scores_deque) >= 90.0:
             print('\nEnvironment solved in {:d} iterations!\tAverage Score: {:.2f}'.format(episode - 100,
