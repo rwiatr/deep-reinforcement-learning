@@ -18,8 +18,6 @@ class EnvHelper:
 
         print('observation space:', self.env.observation_space)
         print('action space:', self.env.action_space)
-        print('  - low:', self.env.action_space.low)
-        print('  - high:', self.env.action_space.high)
 
     def set_agent(self, agent: Agent, name=None):
         self.agent = agent
