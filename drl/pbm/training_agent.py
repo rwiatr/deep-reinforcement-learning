@@ -45,13 +45,17 @@ class TrainingAgent(pbm.Agent):
         episode_return = 0.0
         state = env.reset()
         for t in range(self.max_t):
-            state = torch.from_numpy(state).float().to(self.device)
-            action = self.model.forward(state)
+            action = self.do_action(state)
             state, reward, done, _ = env.step(action)
             episode_return += reward * math.pow(gamma, t)
             if done:
                 break
         return episode_return
+
+    def do_action(self, state):
+        state = torch.from_numpy(state).float().to(self.device)
+        action = self.model.forward(state)
+        return action
 
     def train_epoch(self, env):
         weights_pop = [self.best_weight + (self.sigma * np.random.randn(self.model.get_weights_dim()))
@@ -77,6 +81,11 @@ class TrainingAgent(pbm.Agent):
     def __str__(self):
         return "training_agent::{}".format(str(self.properties))
 
+    def step_no_grad(self, state):
+        state = torch.from_numpy(state).float().to(self.device)
+        with torch.no_grad():
+            action = self.model(state)
+        return action
 
 class Model(nn.Module):
     def __init__(self, env, h_size=16):

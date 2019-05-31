@@ -52,3 +52,30 @@ class EnvHelper:
 
     def show_plot(self, mode=None):
         self.score_plot.show(mode=mode)
+
+    def show_sim_notebook(self, dir='saved', name='trained-MountainCarContinuous'):
+        import matplotlib.pyplot as plt
+        from pyvirtualdisplay import Display
+        display = Display(visible=0, size=(1400, 900))
+        display.start()
+
+        is_ipython = 'inline' in plt.get_backend()
+        if is_ipython:
+            from IPython import display
+
+        plt.ion()
+
+        self.agent.load(dir, name)
+
+        state = self.env.reset()
+        img = plt.imshow(self.env.render(mode='rgb_array'))
+        while True:
+            action = self.agent.step_no_grad(state)
+            img.set_data(self.agent.env.render(mode='rgb_array'))
+            plt.axis('off')
+            display.display(plt.gcf())
+            display.clear_output(wait=True)
+            next_state, reward, done, _ = self.env.step(action)
+            state = next_state
+            if done:
+                break
