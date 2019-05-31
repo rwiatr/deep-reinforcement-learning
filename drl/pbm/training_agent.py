@@ -8,15 +8,16 @@ import torch.nn.functional as F
 
 class TrainingAgentProperties:
     def __init__(self,
-                 pop_size=10,
-                 gamma=0.99,
+                 pop_size=50,
+                 gamma=1.0,
                  max_t=1000,
-                 n_elite=3,
-                 sigma=0.01):
+                 n_elite=None,
+                 elite_fac=0.2,
+                 sigma=0.5):
         self.pop_size = pop_size
         self.gamma = gamma
         self.max_t = max_t
-        self.n_elite = n_elite
+        self.n_elite = int(n_elite if n_elite else elite_fac * pop_size)
         self.sigma = sigma
 
     def __str__(self):
@@ -29,19 +30,21 @@ class TrainingAgent(pbm.Agent):
     def __init__(self, model, device, properties=TrainingAgentProperties(), best_weight=None):
         self.properties = properties
         self.model = model
-        self.best_weight = best_weight if best_weight else np.zeros(self.model.get_weights_dim())
         self.device = device
         self.pop_size = properties.pop_size
         self.gamma = properties.gamma
         self.max_t = properties.max_t
         self.n_elite = properties.n_elite
         self.sigma = properties.sigma
+        self.best_weight = best_weight \
+            if best_weight \
+            else self.sigma * np.random.randn(self.model.get_weights_dim())
 
-    def evaluate(self, env, weights, gamma=1.0, max_t=5000):
+    def evaluate(self, env, weights, gamma=1.0):
         self.model.set_weights(weights)
         episode_return = 0.0
         state = env.reset()
-        for t in range(max_t):
+        for t in range(self.max_t):
             state = torch.from_numpy(state).float().to(self.device)
             action = self.model.forward(state)
             state, reward, done, _ = env.step(action)
@@ -53,7 +56,7 @@ class TrainingAgent(pbm.Agent):
     def train_epoch(self, env):
         weights_pop = [self.best_weight + (self.sigma * np.random.randn(self.model.get_weights_dim()))
                        for _ in range(self.pop_size)]
-        rewards = np.array([self.evaluate(weights, env, self.gamma, self.max_t) for weights in weights_pop])
+        rewards = np.array([self.evaluate(env, weights, self.gamma) for weights in weights_pop])
 
         elite_idxs = rewards.argsort()[-self.n_elite:]
         elite_weights = [weights_pop[i] for i in elite_idxs]
@@ -74,6 +77,7 @@ class TrainingAgent(pbm.Agent):
     def __str__(self):
         return "training_agent::{}".format(str(self.properties))
 
+
 class Model(nn.Module):
     def __init__(self, env, h_size=16):
         super(Model, self).__init__()
@@ -81,7 +85,7 @@ class Model(nn.Module):
         self.s_size = env.observation_space.shape[0]
         self.h_size = h_size
         self.a_size = env.action_space.shape[0]
-        # define layers 
+        # define layers
         self.fc1 = nn.Linear(self.s_size, self.h_size)
         self.fc2 = nn.Linear(self.h_size, self.a_size)
 
@@ -108,5 +112,3 @@ class Model(nn.Module):
 
     def get_weights_dim(self):
         return (self.s_size + 1) * self.h_size + (self.h_size + 1) * self.a_size
-
-
