@@ -87,13 +87,18 @@ class TrainingAgent(pbm.Agent):
             action = self.model(state)
         return action
 
+
 class Model(nn.Module):
     def __init__(self, env, h_size=16):
         super(Model, self).__init__()
         # state, hidden layer, action sizes
         self.s_size = env.observation_space.shape[0]
         self.h_size = h_size
-        self.a_size = env.action_space.shape[0]
+        import gym
+        if type(env.action_space) is gym.spaces.discrete.Discrete:
+            self.a_size = env.action_space.n
+        else:
+            self.a_size = env.action_space.shape[0]
         # define layers
         self.fc1 = nn.Linear(self.s_size, self.h_size)
         self.fc2 = nn.Linear(self.h_size, self.a_size)
