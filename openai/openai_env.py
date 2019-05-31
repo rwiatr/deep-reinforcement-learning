@@ -71,7 +71,7 @@ class EnvHelper:
         img = plt.imshow(self.env.render(mode='rgb_array'))
         while True:
             action = self.agent.step_no_grad(state)
-            img.set_data(self.agent.env.render(mode='rgb_array'))
+            img.set_data(self.env.render(mode='rgb_array'))
             plt.axis('off')
             display.display(plt.gcf())
             display.clear_output(wait=True)
