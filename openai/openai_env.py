@@ -38,7 +38,7 @@ class EnvHelper:
             if episode % print_every == 0:
                 print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
 
-            if episode == episodes or np.mean(scores_deque) > target_mean_reward:
+            if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
                 break
             episode += 1
 
