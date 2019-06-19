@@ -32,31 +32,9 @@ class EnvHelper:
         scores_deque = deque(maxlen=100)
         scores = []
         while True:
-            reward = self.train_epoch(epochs)
-            scores_deque.append(reward)
-            scores.append(reward)
-
-            if episode % print_every == 0:
-                print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
-
-            if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
-                break
-            episode += 1
-
-        self.score_plot.add(self.name, scores)
-
-        if np.mean(scores_deque) >= 90.0:
-            print('\nEnvironment solved in {:d} iterations!\tAverage Score: {:.2f}'.format(episode - 100,
-                                                                                           np.mean(scores_deque)))
-
-    def train_epoch(self, epochs, print_every=100):
-        scores_deque = deque(maxlen=print_every)
-        scores = []
-        for i_epoch in range(1, epochs + 1):
             state = self.env.reset()
             if self.agent.conf.noise:
                 self.agent.conf.noise.reset()
-
             score = 0
             for t in range(self.agent.conf.max_t):
                 action = self.agent.act(state)
@@ -66,15 +44,18 @@ class EnvHelper:
                 score += reward
                 if done:
                     break
+
             scores_deque.append(score)
             scores.append(score)
-            # print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_epoch, np.mean(scores_deque)), end="")
-            # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
-            # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
-            # if i_epoch % print_every == 0:
-                # print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_epoch, np.mean(scores_deque)))
 
-        return scores
+            if episode % print_every == 0:
+                print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
+
+            if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
+                break
+            episode += 1
+
+        self.score_plot.add(self.name, scores)
 
     def show_plot(self, mode=None):
         self.score_plot.show(mode=mode)
