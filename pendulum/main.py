@@ -1,6 +1,7 @@
 import gym
 
 import drl.agent.DDPG as ddpg
+import drl.agent.original.ddpg_agent as ddpg_agent
 from drl.agent.utils import OUNoise
 from pendulum.pendulum_env import EnvHelper
 
@@ -26,7 +27,8 @@ conf.gamma = 0.99
 conf.tau = 1e-3
 conf.max_t = 300
 
-agent = ddpg.Agent(conf)
+# agent = ddpg.Agent(conf)
+agent = ddpg_agent.Agent(conf.s_dim, conf.a_dim, conf.seed, conf)
 
 helper = EnvHelper('Pendulum-v0')
 helper.set_agent(agent)
