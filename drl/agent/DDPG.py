@@ -3,7 +3,8 @@ import torch
 import torch.nn.functional as F
 
 from drl.agent.base import BaseAgent
-from drl.agent.utils import unmap, ReplayBuffer
+# from drl.agent.utils import unmap, ReplayBuffer
+from drl.dql.dqn_agent import ReplayBuffer
 from drl.network.head import vanilla_local_acn, vanilla_target_acn
 
 
@@ -36,7 +37,8 @@ class Agent(BaseAgent):
             self.learn(experiences)
 
     def learn(self, experiences):
-        states, actions, rewards, next_states, dones = unmap(experiences, self.conf.s_dim, self.conf.a_dim)
+        states, actions, rewards, next_states, dones = experiences#unmap(experiences, self.conf.s_dim, self.conf.a_dim)
+
         # ### UPDATE CRITIC LOCAL ### #
         next_actions = self.target.actor(next_states)  # u'(s_t+1) = ~a_t+2
         # calculate the prediction for the next_Q_targets (cumulative reward from next step)

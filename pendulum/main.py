@@ -1,5 +1,3 @@
-from collections import deque
-
 import gym
 
 import drl.agent.DDPG as ddpg

@@ -27,12 +27,12 @@ class EnvHelper:
     def load(self, name=None):
         self.agent.load('saved', name)
 
-    def run_until(self, episodes=None, target_mean_reward=float('inf'), print_every=1):
+    def run_until(self, episodes=None, epochs=100, target_mean_reward=float('inf'), print_every=1):
         episode = 1
         scores_deque = deque(maxlen=100)
         scores = []
         while True:
-            reward = self.train_epoch(episodes)
+            reward = self.train_epoch(epochs)
             scores_deque.append(reward)
             scores.append(reward)
 
@@ -49,10 +49,10 @@ class EnvHelper:
             print('\nEnvironment solved in {:d} iterations!\tAverage Score: {:.2f}'.format(episode - 100,
                                                                                            np.mean(scores_deque)))
 
-    def train_epoch(self, episodes, print_every=100):
+    def train_epoch(self, epochs, print_every=100):
         scores_deque = deque(maxlen=print_every)
         scores = []
-        for i_episode in range(1, episodes + 1):
+        for i_epoch in range(1, epochs + 1):
             state = self.env.reset()
             if self.agent.conf.noise:
                 self.agent.conf.noise.reset()
@@ -68,11 +68,11 @@ class EnvHelper:
                     break
             scores_deque.append(score)
             scores.append(score)
-            print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)), end="")
+            # print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_epoch, np.mean(scores_deque)), end="")
             # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
             # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
-            if i_episode % print_every == 0:
-                print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)))
+            # if i_epoch % print_every == 0:
+                # print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_epoch, np.mean(scores_deque)))
 
         return scores
 
