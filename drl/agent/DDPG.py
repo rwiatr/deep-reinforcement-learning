@@ -12,8 +12,8 @@ class Agent(BaseAgent):
     def __init__(self, conf):
         super().__init__(conf)
         self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
-        self.target = vanilla_target_acn(conf.s_dim, conf.a_dim)
-        self.local = vanilla_local_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c)
+        self.target = vanilla_target_acn(conf.s_dim, conf.a_dim).to(conf.device)
+        self.local = vanilla_local_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c).to(conf.device)
 
     def act(self, state):
         state = torch.from_numpy(state).float().to(self.conf.device)
