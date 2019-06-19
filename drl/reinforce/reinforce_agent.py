@@ -25,7 +25,7 @@ class ReinforceAgentProperties:
             .format(self.pop_size, self.gamma, self.max_t, self.n_elite, self.sigma)
 
 
-class ReinforceAgent(pbm.Agent):
+class ReinforceAgent:
 
     def __init__(self, model, device, properties=ReinforceAgentProperties(), best_weight=None):
         self.properties = properties
@@ -39,6 +39,7 @@ class ReinforceAgent(pbm.Agent):
         self.best_weight = best_weight \
             if best_weight \
             else self.sigma * np.random.randn(self.model.get_weights_dim())
+
 
     def evaluate(self, env, weights, gamma=1.0):
         self.model.set_weights(weights)
@@ -58,8 +59,6 @@ class ReinforceAgent(pbm.Agent):
         return action
 
     def train_epoch(self, env):
-
-
         weights_pop = [self.best_weight + (self.sigma * np.random.randn(self.model.get_weights_dim()))
                        for _ in range(self.pop_size)]
         rewards = np.array([self.evaluate(env, weights, self.gamma) for weights in weights_pop])
