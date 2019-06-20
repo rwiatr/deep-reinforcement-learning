@@ -144,7 +144,9 @@ class Agent():
         # ----------------------- update target networks ----------------------- #
         # self.soft_update(self.critic_local, self.critic_target, TAU)
         # self.soft_update(self.actor_local, self.actor_target, TAU)
-        self.soft_update(self.local, self.target, TAU)
+        # self.soft_update(self.local, self.target, TAU)
+        self.target.update(self.local, self.conf.tau)
+
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
