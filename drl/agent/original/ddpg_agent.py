@@ -60,7 +60,7 @@ class Agent():
         critic_optimizer = optim.Adam(critic_local.parameters(), lr=conf.lr_c, weight_decay=WEIGHT_DECAY)
 
         self.local = ActorCriticNet(actor_local, critic_local, actor_optimizer, critic_optimizer)
-        self.target = vanilla_acn(conf.s_dim, conf.a_dim)
+        self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
 
         # Noise process
         self.noise = conf.noise
