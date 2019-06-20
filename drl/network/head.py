@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 
 def vanilla_acn(s_dim, a_dim, lr_a=None, lr_c=None):
-    actor_net = FCNet(l_dims=(s_dim, s_dim, a_dim), actv=(F.relu, None))
+    actor_net = FCNet(l_dims=(s_dim, 400, 300, a_dim), actv=(F.relu, F.relu, None))
     critic_net = vanilla_action_fc_net(s_dim, a_dim)
     actor_opt = None if lr_a is None else optim.Adam(actor_net.parameters(), lr=lr_a, weight_decay=0)
     critic_opt = None if lr_c is None else optim.Adam(critic_net.parameters(), lr=lr_c, weight_decay=0)
