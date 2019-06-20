@@ -32,7 +32,7 @@ agent = ddpg_agent.Agent(conf.s_dim, conf.a_dim, conf.seed, conf)
 
 helper = EnvHelper('Pendulum-v0')
 helper.set_agent(agent)
-helper.run_until(episodes=1000)
+helper.run_until(episodes=200)
 helper.show_plot(mode='average=100')
 
 env.close()

@@ -10,6 +10,8 @@ import torch.optim as optim
 from drl.agent.original.model import Actor, Critic
 
 # BUFFER_SIZE = int(1e5)  # replay buffer size
+from drl.network.body import ActionFCNet, vanilla_action_fc_net
+
 BATCH_SIZE = 128  # minibatch size
 GAMMA = 0.99  # discount factor
 TAU = 1e-3  # for soft update of target parameters
@@ -41,7 +43,11 @@ class Agent():
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=conf.lr_a)
 
         # Critic Network (w/ Target Network)
-        self.critic_local = Critic(state_size, action_size, random_seed).to(conf.device)
+        # self.critic_local = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
+        if conf.a:
+            self.critic_local = Critic(state_size, action_size, random_seed).to(conf.device)
+        else:
+            self.critic_local = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
         self.critic_target = Critic(state_size, action_size, random_seed).to(conf.device)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=conf.lr_c, weight_decay=WEIGHT_DECAY)
 
