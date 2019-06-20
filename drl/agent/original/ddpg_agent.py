@@ -11,6 +11,7 @@ from drl.agent.original.model import Actor, Critic
 
 # BUFFER_SIZE = int(1e5)  # replay buffer size
 from drl.network.body import ActionFCNet, vanilla_action_fc_net, FCNet
+from drl.network.head import ActorCriticNet
 
 BATCH_SIZE = 128  # minibatch size
 GAMMA = 0.99  # discount factor
@@ -58,6 +59,9 @@ class Agent():
             self.critic_target = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=conf.lr_c, weight_decay=WEIGHT_DECAY)
 
+        self.local = ActorCriticNet(self.actor_local, self.critic_local, self.actor_optimizer, self.critic_optimizer)
+        self.target = ActorCriticNet(self.actor_target, self.critic_target)
+
         # Noise process
         self.noise = conf.noise
 
@@ -77,10 +81,15 @@ class Agent():
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
         state = torch.from_numpy(state).float().to(self.conf.device)
-        self.actor_local.eval()
+        # self.actor_local.eval()
+        self.local.eval()
+
         with torch.no_grad():
-            action = self.actor_local(state).cpu().data.numpy()
-        self.actor_local.train()
+            # action = self.actor_local(state).cpu().data.numpy()
+            action = self.local.actor(state).cpu().data.numpy()
+
+        # self.actor_local.train()
+        self.local.train()
         if add_noise:
             action += self.noise.sample()
         return np.clip(action, -1, 1)
@@ -104,30 +113,38 @@ class Agent():
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
-        actions_next = self.actor_target(next_states)
-        Q_targets_next = self.critic_target(next_states, actions_next)
+        # actions_next = self.actor_target(next_states)
+        actions_next = self.target.actor(next_states)
+        # Q_targets_next = self.critic_target(next_states, actions_next)
+        Q_targets_next = self.target.critic(next_states, actions_next)
         # Compute Q targets for current states (y_i)
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
         # Compute critic loss
-        Q_expected = self.critic_local(states, actions)
+        # Q_expected = self.critic_local(states, actions)
+        Q_expected = self.local.critic(states, actions)
         critic_loss = F.mse_loss(Q_expected, Q_targets)
         # Minimize the loss
-        self.critic_optimizer.zero_grad()
-        critic_loss.backward()
-        self.critic_optimizer.step()
+        # self.critic_optimizer.zero_grad()
+        # critic_loss.backward()
+        # self.critic_optimizer.step()
+        self.local.learn_critic(critic_loss)
 
         # ---------------------------- update actor ---------------------------- #
         # Compute actor loss
-        actions_pred = self.actor_local(states)
-        actor_loss = -self.critic_local(states, actions_pred).mean()
+        # actions_pred = self.actor_local(states)
+        actions_pred = self.local.actor(states)
+        # actor_loss = -self.critic_local(states, actions_pred).mean()
+        actor_loss = -self.local.critic(states, actions_pred).mean()
         # Minimize the loss
-        self.actor_optimizer.zero_grad()
-        actor_loss.backward()
-        self.actor_optimizer.step()
+        # self.actor_optimizer.zero_grad()
+        # actor_loss.backward()
+        # self.actor_optimizer.step()
+        self.local.learn_actor(actor_loss)
 
         # ----------------------- update target networks ----------------------- #
-        self.soft_update(self.critic_local, self.critic_target, TAU)
-        self.soft_update(self.actor_local, self.actor_target, TAU)
+        # self.soft_update(self.critic_local, self.critic_target, TAU)
+        # self.soft_update(self.actor_local, self.actor_target, TAU)
+        self.soft_update(self.local, self.target, TAU)
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
