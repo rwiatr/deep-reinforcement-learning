@@ -41,7 +41,7 @@ class Agent():
         if conf.a:
             self.actor_local = Actor(state_size, action_size, random_seed).to(conf.device)
         else:
-            self.actor_local = FCNet(l_dims=(conf.s_dim, 400, 300, conf.a_dim), actv=(F.relu, F.relu, None))
+            self.actor_local = FCNet(l_dims=(conf.s_dim, 400, 300, conf.a_dim), actv=(F.relu, F.relu, None)).to(conf.device)
         self.actor_target = Actor(state_size, action_size, random_seed).to(conf.device)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=conf.lr_a)
 
