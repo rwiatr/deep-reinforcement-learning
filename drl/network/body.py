@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 def unwrap(items, n):
     if hasattr(items, '__len__'):
-        if len(items) == n:
+        if len(items) == n - 1:
             return items
         else:
             raise Exception('items has len of %d, expected %d'.format(len(items), n))
@@ -42,7 +42,7 @@ class FCNet(nn.Module):
         return x
 
 
-def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 400, 300, 1), actv=(F.relu, F.relu, F.relu, None), action_cat=1):
+def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 400, 300, 1), actv=(F.relu, F.relu, None), action_cat=1):
     fc_units = list(fc_units)
     fc_units[0] = s_dim  # s_dim is input dimensions
     return ActionFCNet(l_dims=tuple(fc_units), actv=actv, a_dim=a_dim, action_cat=action_cat)

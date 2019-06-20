@@ -26,7 +26,7 @@ conf.batch_size = 128
 conf.gamma = 0.99
 conf.tau = 1e-3
 conf.max_t = 300
-
+conf.a = False
 # agent = ddpg.Agent(conf)
 agent = ddpg_agent.Agent(conf.s_dim, conf.a_dim, conf.seed, conf)
 
