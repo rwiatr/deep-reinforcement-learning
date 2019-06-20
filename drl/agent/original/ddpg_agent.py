@@ -11,7 +11,7 @@ from drl.agent.original.model import Actor, Critic
 
 # BUFFER_SIZE = int(1e5)  # replay buffer size
 from drl.network.body import ActionFCNet, vanilla_action_fc_net, FCNet
-from drl.network.head import ActorCriticNet
+from drl.network.head import ActorCriticNet, vanilla_acn
 
 BATCH_SIZE = 128  # minibatch size
 GAMMA = 0.99  # discount factor
@@ -60,7 +60,7 @@ class Agent():
         critic_optimizer = optim.Adam(critic_local.parameters(), lr=conf.lr_c, weight_decay=WEIGHT_DECAY)
 
         self.local = ActorCriticNet(actor_local, critic_local, actor_optimizer, critic_optimizer)
-        self.target = ActorCriticNet(actor_target, critic_target)
+        self.target = vanilla_acn(conf.s_dim, conf.a_dim)
 
         # Noise process
         self.noise = conf.noise
@@ -93,9 +93,6 @@ class Agent():
         if add_noise:
             action += self.noise.sample()
         return np.clip(action, -1, 1)
-
-    def reset(self):
-        self.noise.reset()
 
     def learn(self, experiences, gamma):
         """Update policy and value parameters using given batch of experience tuples.
@@ -130,43 +127,6 @@ class Agent():
         self.local.learn_actor(-self.local.critic(states, actions).mean())
 
         self.target.update(self.local, self.conf.tau)
-
-
-    def soft_update(self, local_model, target_model, tau):
-        """Soft update model parameters.
-        θ_target = τ*θ_local + (1 - τ)*θ_target
-
-        Params
-        ======
-            local_model: PyTorch model (weights will be copied from)
-            target_model: PyTorch model (weights will be copied to)
-            tau (float): interpolation parameter 
-        """
-        for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
-            target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
-
-
-class OUNoise:
-    """Ornstein-Uhlenbeck process."""
-
-    def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
-        """Initialize parameters and noise process."""
-        self.mu = mu * np.ones(size)
-        self.theta = theta
-        self.sigma = sigma
-        self.seed = random.seed(seed)
-        self.reset()
-
-    def reset(self):
-        """Reset the internal state (= noise) to mean (mu)."""
-        self.state = copy.copy(self.mu)
-
-    def sample(self):
-        """Update internal state and return it as a noise sample."""
-        x = self.state
-        dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
-        self.state = x + dx
-        return self.state
 
 
 class ReplayBuffer:
