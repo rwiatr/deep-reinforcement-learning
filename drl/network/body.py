@@ -5,10 +5,11 @@ import torch.nn.functional as F
 
 def unwrap(items, n):
     if hasattr(items, '__len__'):
-        if len(items) == n - 1:
+        expected = n - 1
+        if len(items) == expected:
             return items
         else:
-            raise Exception('items has len of %d, expected %d'.format(len(items), n))
+            raise Exception('items has len of %d, expected %d' % (len(items), expected))
     else:
         return [items] * n
 

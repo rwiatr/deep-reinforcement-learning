@@ -27,8 +27,8 @@ conf.gamma = 0.99
 conf.tau = 1e-3
 conf.max_t = 300
 conf.a = False
-# agent = ddpg.Agent(conf)
-agent = ddpg_agent.Agent(conf.s_dim, conf.a_dim, conf.seed, conf)
+agent = ddpg.Agent(conf)
+# agent = ddpg_agent.Agent(conf.s_dim, conf.a_dim, conf.seed, conf)
 
 helper = EnvHelper('Pendulum-v0')
 helper.set_agent(agent)
