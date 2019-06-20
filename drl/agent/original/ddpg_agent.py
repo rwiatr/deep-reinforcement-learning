@@ -46,9 +46,10 @@ class Agent():
         # self.critic_local = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
         if conf.a:
             self.critic_local = Critic(state_size, action_size, random_seed).to(conf.device)
+            self.critic_target = Critic(state_size, action_size, random_seed).to(conf.device)
         else:
             self.critic_local = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
-        self.critic_target = Critic(state_size, action_size, random_seed).to(conf.device)
+            self.critic_target = vanilla_action_fc_net(conf.s_dim, conf.a_dim).to(conf.device)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=conf.lr_c, weight_decay=WEIGHT_DECAY)
 
         # Noise process
