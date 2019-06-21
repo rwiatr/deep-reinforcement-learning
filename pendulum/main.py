@@ -1,7 +1,6 @@
 import gym
 
 import drl.agent.DDPG as ddpg
-import drl.agent.original.ddpg_agent as ddpg_agent
 from drl.agent.utils import OUNoise
 from pendulum.pendulum_env import EnvHelper
 
