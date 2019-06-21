@@ -43,8 +43,8 @@ conf.mem_disabled = False
 # agent = ddpg_agent.Agent(conf)
 
 # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
-agent = sm.Agent(conf, [ddpg_agent.Agent(conf)])
-# agent = sm.Agent(conf, [ddpg.Agent(conf)])
+# agent = sm.Agent(conf, [ddpg_agent.Agent(conf)])
+agent = sm.Agent(conf, [ddpg.Agent(conf)])
 
 home = expanduser("~")
 path = home + '/Reacher_multi.app'
@@ -52,10 +52,10 @@ path = home + '/Reacher.app'
 env = UnityEnvironment(file_name=path)
 accessor = EnvAccessor(env)
 
-accessor.set_train_mode(False)
+accessor.set_train_mode(True)
 # agent = multi_ddpg_with_shared_mem(conf, 1)
 helper = EnvHelperMultiAgent2(accessor)
 
 helper.set_agent(agent)
-helper.run_until(1000, print_every=10)
+helper.run_until(1000, print_every=1)
 
