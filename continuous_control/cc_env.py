@@ -235,6 +235,8 @@ class EnvHelperMultiAgent2:
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
                 break
 
+            episode += 1
+
         self.score_plot.add(self.name, scores)
 
     def show_plot(self, mode=None):
