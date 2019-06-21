@@ -1,5 +1,7 @@
 from collections import deque
 
+import gym
+
 from drl.agent.base import BaseAgent
 from drl.benchmark import ScorePlot
 import numpy as np
@@ -24,9 +26,21 @@ class EnvAccessor:
         self.train_mode = train_mode
 
 
+class OpenAiEnvAccessor:
+    def __init__(self, name, seed = 1010):
+        self.env = gym.make(name)
+        self.env.seed(seed)
+        np.random.seed(seed)
+
+    def reset(self):
+        return self.env.reset()
+
+    def step(self, actions):
+        return self.env.step(actions)
+
 class EnvHelper:
 
-    def __init__(self, env: EnvAccessor, score_plot=ScorePlot(), seed=101, ):
+    def __init__(self, env, score_plot=ScorePlot(), seed=101, ):
         self.env = env
         np.random.seed(seed)
         self.score_plot = score_plot
