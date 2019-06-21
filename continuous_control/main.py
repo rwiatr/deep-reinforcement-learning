@@ -43,8 +43,8 @@ conf.mem_disabled = False
 # agent = ddpg_agent.Agent(conf)
 
 # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
-# agent = sm.Agent(conf, [ddpg_agent.Agent(conf)])
-agent = sm.Agent(conf, [ddpg.Agent(conf)])
+agent = sm.Agent(conf, [ddpg_agent.Agent(conf)])
+# agent = sm.Agent(conf, [ddpg.Agent(conf)])
 
 home = expanduser("~")
 path = home + '/Reacher_multi.app'
@@ -55,7 +55,7 @@ accessor = EnvAccessor(env)
 accessor.set_train_mode(True)
 # agent = multi_ddpg_with_shared_mem(conf, 1)
 helper = EnvHelperMultiAgent2(accessor)
-
+print(agent)
 helper.set_agent(agent)
 helper.run_until(1000, print_every=1)
 
