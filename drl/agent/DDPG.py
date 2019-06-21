@@ -3,8 +3,8 @@ import torch
 import torch.nn.functional as F
 
 from drl.agent.base import BaseAgent
-# from drl.agent.utils import unmap, ReplayBuffer
-from drl.dql.dqn_agent import ReplayBuffer
+from drl.agent.utils import unmap, ReplayBuffer
+# from drl.dql.dqn_agent import ReplayBuffer
 from drl.network.head import vanilla_acn
 
 
@@ -12,8 +12,8 @@ class Agent(BaseAgent):
 
     def __init__(self, conf):
         super().__init__(conf)
-        # self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
-        self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
+        self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
+        # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
         self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
         self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c).to(conf.device)
 
@@ -32,13 +32,14 @@ class Agent(BaseAgent):
         self.memory.add(state, action, reward, next_state, done)
 
         if len(self.memory) > self.conf.batch_size:
-            # sample = self.memory.sample(self.conf.batch_size)
-            # sample = torch.from_numpy(sample).to(self.conf.device)
-            sample = self.memory.sample()
+            sample = self.memory.sample(self.conf.batch_size)
+            sample = torch.from_numpy(sample).to(self.conf.device)
+            # sample = self.memory.sample()
             self.learn(sample)
 
     def learn(self, experiences):
-        states, actions, rewards, next_states, dones = experiences  # unmap(experiences, self.conf.s_dim, self.conf.a_dim)
+        # states, actions, rewards, next_states, dones = experiences
+        states, actions, rewards, next_states, dones = unmap(experiences, self.conf.s_dim, self.conf.a_dim)
 
         # ### UPDATE CRITIC LOCAL ### #
         next_actions = self.target.actor(next_states)  # u'(s_t+1) = ~a_t+2
