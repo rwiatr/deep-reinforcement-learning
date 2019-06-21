@@ -225,8 +225,10 @@ class EnvHelperMultiAgent2:
             scores_deque.append(score)
             scores.append(score)
 
-            print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(episode, np.mean(scores_deque), score),
-                  end="")
+            print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}'.format(episode, np.mean(scores_deque),
+                                                                                         np.mean(scores_deque[0:10]),
+                                                                                         end=""))
+
             if episode % print_every == 0:
                 # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
                 # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
