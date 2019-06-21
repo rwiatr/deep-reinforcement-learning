@@ -72,6 +72,7 @@ class EnvHelper:
     def run_until(self, episodes=None, target_mean_reward=float('inf'), print_every=1):
         episode = 1
         scores_deque = deque(maxlen=100)
+        scores_10_deque = deque(maxlen=10)
         scores = []
         while True:
             state = self.env.reset()
@@ -205,6 +206,7 @@ class EnvHelperMultiAgent2:
     def run_until(self, episodes=None, target_mean_reward=float('inf'), print_every=1):
         episode = 1
         scores_deque = deque(maxlen=100)
+        scores_10_deque = deque(maxlen=10)
         scores = []
         while True:
             state = self.env.reset()
@@ -223,15 +225,17 @@ class EnvHelperMultiAgent2:
                     break
 
             scores_deque.append(score)
+            scores_10_deque.append(score)
+
             scores.append(score)
 
             print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\tScore: {:.2f}'
-                  .format(episode, np.mean(scores_deque), np.mean(scores_deque[0:10]), score), end="")
+                  .format(episode, np.mean(scores_deque), np.mean(scores_10_deque), score), end="")
             if episode % print_every == 0:
                 # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
                 # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
                 print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}'
-                      .format(episode, np.mean(scores_deque), np.mean(scores_deque[0:10])))
+                      .format(episode, np.mean(scores_deque), np.mean(scores_10_deque)))
 
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
                 break
