@@ -27,7 +27,7 @@ class EnvAccessor:
 
 
 class OpenAiEnvAccessor:
-    def __init__(self, name, seed = 1010):
+    def __init__(self, name, seed=1010):
         self.env = gym.make(name)
         self.env.seed(seed)
         np.random.seed(seed)
@@ -37,6 +37,21 @@ class OpenAiEnvAccessor:
 
     def step(self, actions):
         return self.env.step(actions)
+
+
+class OpenAiEnvAccessorMulti:
+    def __init__(self, name, seed=1010):
+        self.env = gym.make(name)
+        self.env.seed(seed)
+        np.random.seed(seed)
+
+    def reset(self):
+        return [self.env.reset()]
+
+    def step(self, actions):
+        next_state, reward, done, rest = self.env.step(actions[0])
+        return [next_state], [reward], [done], [rest]
+
 
 class EnvHelper:
 
@@ -75,8 +90,12 @@ class EnvHelper:
             scores_deque.append(score)
             scores.append(score)
 
+            print('\rEpisode {}\tAverage Score: {:.2f}\tScore: {:.2f}'.format(episode, np.mean(scores_deque), score),
+                  end="")
             if episode % print_every == 0:
-                print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
+                # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
+                # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
+                print('\rEpisode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
 
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
                 break
