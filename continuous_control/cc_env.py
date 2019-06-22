@@ -213,12 +213,14 @@ class EnvHelperMultiAgent2:
             if self.agent.conf.noise:
                 self.agent.conf.noise.reset()
             score = 0
+            steps = 0
             for t in range(self.agent.conf.max_t):
                 action = self.agent.act(state)
                 next_state, reward, done, _ = self.env.step(action)
 
                 self.agent.step(state, action, reward, next_state, done)
 
+                steps += 1
                 state = next_state
                 score += np.mean(reward)
                 if np.any(done):
@@ -229,8 +231,8 @@ class EnvHelperMultiAgent2:
 
             scores.append(score)
 
-            print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\tScore: {:.2f}'
-                  .format(episode, np.mean(scores_deque), np.mean(scores_10_deque), score), end="")
+            print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\tScore: {:.2f}\tSteps: {:d}'
+                  .format(episode, np.mean(scores_deque), np.mean(scores_10_deque), score, steps), end="")
             if episode % print_every == 0:
                 # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
                 # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')

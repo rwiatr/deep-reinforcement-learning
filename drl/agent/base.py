@@ -53,6 +53,9 @@ class SharedMemAgent(BaseAgent):
     def learn(self, experiences):
         """ NoOp """
 
+    def __str__(self):
+        return 'SharedMemory{' + ';'.join([str(agent) for agent in self.agents]) + '}'
+
 
 def multi_ddpg_with_shared_mem(conf, n):
     conf.mem_disabled = True
