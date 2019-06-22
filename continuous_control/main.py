@@ -22,6 +22,8 @@ for conf in base.hyper_space(params={'batch_size': [32, 512]}, n=4):
     conf.seed = 1
     conf.s_dim = 33
     conf.a_dim = 4
+    conf.wd_a = 0
+    conf.wd_c = 0.001
     # conf.s_dim = 3
     # conf.a_dim = 1
     conf.lr_c = 1e-3

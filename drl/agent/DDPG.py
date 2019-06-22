@@ -16,7 +16,8 @@ class Agent(BaseAgent):
             self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
         # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
         self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
-        self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c).to(conf.device)
+        self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
+            .to(conf.device)
         self.noise = OUNoise(conf.a_dim, conf.seed)
 
     def act(self, state):
