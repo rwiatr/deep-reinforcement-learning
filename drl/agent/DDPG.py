@@ -65,3 +65,6 @@ class Agent(BaseAgent):
         self.local.learn_actor(-self.local.critic(states, actions).mean())
 
         self.target.update(self.local, self.conf.tau)
+
+    def __str__(self):
+        return "ddpg={" + self.conf + "}"
