@@ -11,15 +11,16 @@ from os.path import expanduser
 
 from continuous_control.cc_env import EnvAccessor, EnvHelper, EnvHelperMultiAgent, EnvHelperMultiAgent2, \
     OpenAiEnvAccessor, OpenAiEnvAccessorMulti
-from drl.agent.base import multi_ddpg_with_shared_mem
-import drl.agent.SharedMem as sm
 
 from drl.agent.utils import OUNoise
 import drl.agent.original.ddpg_agent as ddpg_agent
 import drl.agent.DDPG as ddpg
+import drl.agent.base as base
+
 
 class Object:
     pass
+
 
 conf = Object()
 conf.buffer_size = int(1e5)
@@ -44,7 +45,7 @@ conf.mem_disabled = False
 # agent = ddpg_agent.Agent(conf)
 
 # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
-agent = drl.agent.base.SharedMemAgent(conf, [ddpg_agent.Agent(conf)])
+agent = base.SharedMemAgent(conf, [ddpg_agent.Agent(conf)])
 # agent = sm.Agent(conf, [ddpg.Agent(conf)])
 
 home = expanduser("~")
@@ -59,4 +60,3 @@ helper = EnvHelperMultiAgent2(accessor)
 print(agent)
 helper.set_agent(agent)
 helper.run_until(1000, print_every=1)
-

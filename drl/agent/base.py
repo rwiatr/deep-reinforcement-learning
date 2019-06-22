@@ -47,7 +47,9 @@ class SharedMemAgent(BaseAgent):
                 sample = self.memory.sample(self.conf.batch_size)
                 sample = torch.from_numpy(sample).to(self.conf.device)
                 if isinstance(agent, ddpg_agent.Agent):
+                    print(type(sample))
                     sample = unmap(sample, self.conf.s_dim, self.conf.a_dim)
+                    print(type(sample[0]))
                 agent.learn(sample)
 
     def learn(self, experiences):
