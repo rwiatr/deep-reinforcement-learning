@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 
 from drl.agent.base import BaseAgent
-from drl.agent.utils import unmap, ReplayBuffer
+from drl.agent.utils import unmap, ReplayBuffer, OUNoise
 # from drl.dql.dqn_agent import ReplayBuffer
 from drl.network.head import vanilla_acn
 
@@ -17,6 +17,7 @@ class Agent(BaseAgent):
         # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
         self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
         self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c).to(conf.device)
+        self.noise = OUNoise(conf.a_dim, conf.seed)
 
     def act(self, state):
         state = torch.from_numpy(state).float().to(self.conf.device)
@@ -37,6 +38,9 @@ class Agent(BaseAgent):
             sample = torch.from_numpy(sample).to(self.conf.device)
             # sample = self.memory.sample()
             self.learn(sample)
+
+    def reset(self):
+        self.noise.reset()
 
     def learn(self, experiences):
         # states, actions, rewards, next_states, dones = experiences

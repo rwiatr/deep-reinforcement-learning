@@ -9,6 +9,9 @@ class BaseAgent:
     def __init__(self, conf):
         self.conf = conf
 
+    def reset(self):
+        """ """
+
     def act(self, state):
         """ """
 
@@ -26,6 +29,10 @@ class SharedMemAgent(BaseAgent):
         self.agents = agents
         self.update_every_n_steps = update_every_n_steps
         self.step_n = 0
+
+    def reset(self):
+        for agent in self.agents:
+            agent.reset()
 
     def act(self, states):
         return list(a.act(s) for a, s in zip(self.agents, states))

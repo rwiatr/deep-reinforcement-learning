@@ -133,60 +133,6 @@ class EnvHelper:
     #             break
 
 
-class EnvHelperMultiAgent:
-
-    def __init__(self, env: EnvAccessor, score_plot=ScorePlot(), seed=101, n_agents=1):
-        self.env = env
-        self.n_agents = n_agents
-        np.random.seed(seed)
-        self.score_plot = score_plot
-        self.agent = None
-        self.name = None
-
-    def set_agent(self, agent: BaseAgent, name=None):
-        self.agent = agent
-        self.name = name if name else str(agent)
-
-    def load(self, name=None):
-        self.agent.load('saved', name)
-
-    def run_until(self, episodes=None, target_mean_reward=float('inf'), print_every=1):
-        episode = 1
-        scores_deque = deque(maxlen=100)
-        scores = []
-        while True:
-            state = self.env.reset()
-            if self.agent.conf.noise:
-                self.agent.conf.noise.reset()
-            score = 0
-            for t in range(self.agent.conf.max_t):
-                action = list([self.agent.act(s) for s in state])
-                next_state, reward, done, _ = self.env.step(action)
-
-                for idx in range(self.n_agents):
-                    self.agent.step(state[idx], action[idx], reward[idx], next_state[idx], done[idx])
-
-                state = next_state
-                score += np.mean(reward)
-                if np.any(done):
-                    break
-
-            scores_deque.append(score)
-            scores.append(score)
-
-            if episode % print_every == 0:
-                print('Episode {}\tAverage Score: {:.2f}'.format(episode, np.mean(scores_deque)))
-
-            if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
-                break
-            episode += 1
-
-        self.score_plot.add(self.name, scores)
-
-    def show_plot(self, mode=None):
-        self.score_plot.show(mode=mode)
-
-
 class EnvHelperMultiAgent2:
 
     def __init__(self, env: EnvAccessor, score_plot=ScorePlot(), seed=101):
@@ -210,8 +156,8 @@ class EnvHelperMultiAgent2:
         scores = []
         while True:
             state = self.env.reset()
-            if self.agent.conf.noise:
-                self.agent.conf.noise.reset()
+            self.agent.reset()
+
             score = 0
             steps = 0
             for t in range(self.agent.conf.max_t):
@@ -234,7 +180,7 @@ class EnvHelperMultiAgent2:
             print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\tScore: {:.2f}\tSteps: {:d}'
                   .format(episode, np.mean(scores_deque), np.mean(scores_10_deque), score, steps), end="")
             if episode % print_every == 0:
-                print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\t\t\t\t'
+                print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}                              '
                       .format(episode, np.mean(scores_deque), np.mean(scores_10_deque)))
 
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
