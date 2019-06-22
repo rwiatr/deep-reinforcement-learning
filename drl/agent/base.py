@@ -12,9 +12,12 @@ class HyperSpace:
     def __str__(self):
         return str(self.__dict__)
 
-def hyper_space_sc_rec(map, key, keys):
-    for value in map[key]:
-        hyper_space_sc_rec(map, key[0], keys[1:])
+
+def hyper_space_sc_rec(map, keys):
+    if len(keys) == 1:
+        return [{keys[0]: value} for value in map[keys[0]]]
+    rest = hyper_space_sc_rec(map, keys[1:])
+    return [[dict(items, **{keys[0]: value}) for items in rest] for value in map[keys[0]]]
 
 
 def hyper_space_ns(params={'lr': [5e-8, 5e-1]}):
@@ -22,7 +25,6 @@ def hyper_space_ns(params={'lr': [5e-8, 5e-1]}):
 
     for key in params.keys():
         values = params[key]
-
 
     property_matrix = np.zeros([len(params), n])
     for idx, key in enumerate(params):
@@ -52,6 +54,7 @@ def hyper_space_ns(params={'lr': [5e-8, 5e-1]}):
 
             if k == len(params):
                 return
+
 
 def hyper_space(params={'lr': [5e-8, 5e-1]}, n=5, d=0):
     property_matrix = np.zeros([len(params), n])
