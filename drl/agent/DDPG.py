@@ -67,4 +67,4 @@ class Agent(BaseAgent):
         self.target.update(self.local, self.conf.tau)
 
     def __str__(self):
-        return "ddpg={" + self.conf + "}"
+        return "ddpg={" + str(self.conf) + "}"
