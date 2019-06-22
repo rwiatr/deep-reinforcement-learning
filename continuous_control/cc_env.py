@@ -135,12 +135,13 @@ class EnvHelper:
 
 class EnvHelperMultiAgent2:
 
-    def __init__(self, env: EnvAccessor, score_plot=ScorePlot(), seed=101):
+    def __init__(self, env: EnvAccessor, score_plot=ScorePlot(), seed=101, only_first=False):
         self.env = env
         np.random.seed(seed)
         self.score_plot = score_plot
         self.agent = None
         self.name = None
+        self.only_first = only_first
 
     def set_agent(self, agent: BaseAgent, name=None):
         self.agent = agent
@@ -162,10 +163,14 @@ class EnvHelperMultiAgent2:
             score = 0
             steps = 0
             for t in range(self.agent.conf.max_t):
-                action = self.agent.act(state)
-                next_state, reward, done, _ = self.env.step(action)
+                action = self.agent.act(state[0] if self.only_first else state)
+                next_state, reward, done, _ = self.env.step([action] if self.only_first else action)
 
-                self.agent.step(state, action, reward, next_state, done)
+                self.agent.step(state[0] if self.only_first else state,
+                                action,
+                                reward[0] if self.only_first else reward,
+                                next_state[0] if self.only_first else next_state,
+                                done[0] if self.only_first else done)
 
                 steps += 1
                 state = next_state

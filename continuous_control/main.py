@@ -1,6 +1,7 @@
 import gym
 import torch
 
+import bkp.ddpg_agent
 import drl.agent.DDPG as ddpg
 import drl.agent.base
 import drl.agent.original.ddpg_agent as ddpg_agent
@@ -18,7 +19,14 @@ import drl.agent.DDPG as ddpg
 import drl.agent.base as base
 
 for conf in base.hyper_space(params={'batch_size': [32, 512]}, n=4):
-    conf.buffer_size = int(1e5)
+    # BUFFER_SIZE = int(1e6)  # replay buffer size
+    # BATCH_SIZE = 128  # minibatch size
+    # GAMMA = 0.99  # discount factor
+    # TAU = 1e-3  # for soft update of target parameters
+    # LR_ACTOR = 1e-4  # learning rate of the actor
+    # LR_CRITIC = 3e-4  # learning rate of the critic
+    # WEIGHT_DECAY = 0.0001  # L2 weight decay
+    conf.buffer_size = int(1e6)
     conf.seed = 1
     conf.s_dim = 33
     conf.a_dim = 4
@@ -43,7 +51,7 @@ for conf in base.hyper_space(params={'batch_size': [32, 512]}, n=4):
 
     # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
     # agent = base.SharedMemAgent(conf, [ddpg_agent.Agent(conf)])
-    agent = ddpg_agent.Agent(conf)
+    agent = bkp.ddpg_agent.Agent(conf)
     # agent = sm.Agent(conf, [ddpg.Agent(conf)])
 
     home = expanduser("~")
@@ -54,7 +62,7 @@ for conf in base.hyper_space(params={'batch_size': [32, 512]}, n=4):
 
     accessor.set_train_mode(True)
     # agent = multi_ddpg_with_shared_mem(conf, 1)
-    helper = EnvHelperMultiAgent2(accessor)
+    helper = EnvHelperMultiAgent2(accessor, only_first=isinstance(agent, bkp.ddpg_agent.Agent))
     print(agent)
     helper.set_agent(agent)
     helper.run_until(1000, print_every=5)
