@@ -234,9 +234,7 @@ class EnvHelperMultiAgent2:
             print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\tScore: {:.2f}\tSteps: {:d}'
                   .format(episode, np.mean(scores_deque), np.mean(scores_10_deque), score, steps), end="")
             if episode % print_every == 0:
-                # torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
-                # torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
-                print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}'
+                print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}\t\t\t\t'
                       .format(episode, np.mean(scores_deque), np.mean(scores_10_deque)))
 
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
