@@ -45,7 +45,6 @@ class SharedMemAgent(BaseAgent):
         if len(self.memory) > self.conf.batch_size:
             for agent in self.agents:
                 sample = self.memory.sample(self.conf.batch_size)
-                print(self.conf.device)
                 sample = torch.from_numpy(sample).to(self.conf.device)
                 if isinstance(agent, ddpg_agent.Agent):
                     sample = unmap(sample, self.conf.s_dim, self.conf.a_dim)
