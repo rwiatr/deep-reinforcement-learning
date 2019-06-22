@@ -19,21 +19,21 @@ class Agent(BaseAgent):
         self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
         self.agents = agents
         self.update_every_n_steps = update_every_n_steps
-        self.step = 0
+        self.step_n = 0
 
     def act(self, states):
         return list(a.act(s) for a, s in zip(self.agents, states))
 
     def step(self, states, actions, rewards, next_states, dones):
-        self.step += 1
+        self.step_n += 1
         for idx in range(len(self.agents)):
             self.memory.add(states[idx], actions[idx], rewards[idx], next_states[idx], dones[idx])
 
         if not self.update_every_n_steps:
             self.try_update()
-        elif self.step > self.update_every_n_steps:
+        elif self.step_n > self.update_every_n_steps:
             self.try_update()
-            self.step = 0
+            self.step_n = 0
 
     def try_update(self):
         if len(self.memory) > self.conf.batch_size:
