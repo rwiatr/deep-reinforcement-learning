@@ -2,6 +2,7 @@ import gym
 import torch
 
 import drl.agent.DDPG as ddpg
+import drl.agent.base
 import drl.agent.original.ddpg_agent as ddpg_agent
 from drl.agent.utils import OUNoise
 from pendulum.pendulum_env import EnvHelper
@@ -10,7 +11,7 @@ from os.path import expanduser
 
 from continuous_control.cc_env import EnvAccessor, EnvHelper, EnvHelperMultiAgent, EnvHelperMultiAgent2, \
     OpenAiEnvAccessor, OpenAiEnvAccessorMulti
-from drl.agent.SharedMem import multi_ddpg_with_shared_mem
+from drl.agent.base import multi_ddpg_with_shared_mem
 import drl.agent.SharedMem as sm
 
 from drl.agent.utils import OUNoise
@@ -43,7 +44,7 @@ conf.mem_disabled = False
 # agent = ddpg_agent.Agent(conf)
 
 # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
-agent = sm.Agent(conf, [ddpg_agent.Agent(conf)])
+agent = drl.agent.base.SharedMemAgent(conf, [ddpg_agent.Agent(conf)])
 # agent = sm.Agent(conf, [ddpg.Agent(conf)])
 
 home = expanduser("~")

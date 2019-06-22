@@ -7,6 +7,7 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
+from drl.agent.base import BaseAgent
 from drl.agent.original.model import Actor, Critic
 
 BUFFER_SIZE = int(1e6)  # replay buffer size
@@ -20,7 +21,7 @@ WEIGHT_DECAY = 0.0001  # L2 weight decay
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-class Agent():
+class Agent(BaseAgent):
     """Interacts with and learns from the environment."""
 
     def __init__(self, conf):
@@ -78,8 +79,8 @@ class Agent():
         self.noise.reset()
 
     def learn(self, experiences, gamma=None):
-        gamma = self.conf.gamma if not gamma else gamma
-
+        # gamma = self.conf.gamma if not gamma else gamma
+        gamma = GAMMA if not gamma else gamma
         """Update policy and value parameters using given batch of experience tuples.
         Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
         where:
@@ -92,6 +93,12 @@ class Agent():
             gamma (float): discount factor
         """
         states, actions, rewards, next_states, dones = experiences
+
+        print(type(states))
+        print(type(actions))
+        print(type(rewards))
+        print(type(next_states))
+        print(type(dones))
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
