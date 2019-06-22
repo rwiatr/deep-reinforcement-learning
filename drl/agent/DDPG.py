@@ -69,3 +69,7 @@ class Agent(BaseAgent):
 
     def __str__(self):
         return "ddpg={" + str(self.conf) + "}"
+
+    def save(self, path, name):
+        torch.save(self.target.state_dict(), path + '/' + name + '.target')
+        torch.save(self.local.state_dict(), path + '/' + name + '.local')

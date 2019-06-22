@@ -12,6 +12,46 @@ class HyperSpace:
     def __str__(self):
         return str(self.__dict__)
 
+def hyper_space_sc_rec(map, key, keys):
+    for value in map[key]:
+        hyper_space_sc_rec(map, key[0], keys[1:])
+
+
+def hyper_space_ns(params={'lr': [5e-8, 5e-1]}):
+    all_keys = params.keys()
+
+    for key in params.keys():
+        values = params[key]
+
+
+    property_matrix = np.zeros([len(params), n])
+    for idx, key in enumerate(params):
+        f, t = params[key]
+        np.clip(np.linspace(f, t, n, endpoint=True), f, t, out=property_matrix[idx])
+
+    displacement = (np.random.rand(n - 2) - .5) * 2 * d
+    property_matrix[:, 1:-1] -= property_matrix[:, 1:-1] * displacement
+
+    index_vector = np.zeros(len(params), dtype='int64')
+    while True:
+        properties = HyperSpace()
+        for idx, key in enumerate(params):
+            value = property_matrix[idx, index_vector[idx]]
+            if key in ['buffer_size', 'batch_size', 'update_every', 'fc_size']:
+                value = int(value)
+            setattr(properties, key, value)
+        yield properties
+
+        k = 0
+        while True:
+            index_vector[k] = (index_vector[k] + 1) % n
+            if index_vector[k] == 0:
+                k += 1
+            else:
+                break
+
+            if k == len(params):
+                return
 
 def hyper_space(params={'lr': [5e-8, 5e-1]}, n=5, d=0):
     property_matrix = np.zeros([len(params), n])
@@ -58,6 +98,9 @@ class BaseAgent:
         """ """
 
     def learn(self, experiences):
+        """ """
+
+    def save(self, path, name):
         """ """
 
 

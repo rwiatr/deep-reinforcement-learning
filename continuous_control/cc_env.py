@@ -154,6 +154,7 @@ class EnvHelperMultiAgent2:
         scores_deque = deque(maxlen=100)
         scores_10_deque = deque(maxlen=10)
         scores = []
+        max_mean = -float('inf')
         while True:
             state = self.env.reset()
             self.agent.reset()
@@ -182,6 +183,10 @@ class EnvHelperMultiAgent2:
             if episode % print_every == 0:
                 print('\rEpisode {}\tAverage Score: {:.2f}\tAverage 10 Score: {:.2f}                              '
                       .format(episode, np.mean(scores_deque), np.mean(scores_10_deque)))
+
+            if max_mean < np.mean(scores_10_deque):
+                max_mean = np.mean(scores_10_deque)
+                self.agent.save("saved", self.name)
 
             if episode == episodes or np.mean(scores_deque) >= target_mean_reward:
                 break
