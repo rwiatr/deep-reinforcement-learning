@@ -7,7 +7,6 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-from drl.agent.base import BaseAgent
 from drl.agent.original.model import Actor, Critic
 
 BUFFER_SIZE = int(1e6)  # replay buffer size
@@ -21,7 +20,7 @@ WEIGHT_DECAY = 0.0001  # L2 weight decay
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-class Agent(BaseAgent):
+class Agent():
     """Interacts with and learns from the environment."""
 
     def __init__(self, conf):
