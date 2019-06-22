@@ -93,12 +93,6 @@ class Agent():
         """
         states, actions, rewards, next_states, dones = experiences
 
-        print(type(states))
-        print(type(actions))
-        print(type(rewards))
-        print(type(next_states))
-        print(type(dones))
-
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
         actions_next = self.actor_target(next_states)
