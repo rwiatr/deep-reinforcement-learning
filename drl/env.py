@@ -1,8 +1,26 @@
 import numpy as np
 from collections import deque
-
-from drl.agent.base import BaseAgent
 from drl.benchmark import ScorePlot
+
+
+class BaseAgent:
+    def __init__(self, conf):
+        self.conf = conf
+
+    def reset(self):
+        """ """
+
+    def act(self, state):
+        """ """
+
+    def step(self, state, action, reward, next_state, done):
+        """ """
+
+    def learn(self, experiences):
+        """ """
+
+    def save(self, path, name):
+        """ """
 
 
 class Env:
