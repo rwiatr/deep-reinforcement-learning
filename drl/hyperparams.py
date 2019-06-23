@@ -13,19 +13,13 @@ def default():
     params.batch_size = 128
     params.buffer_size = int(1e6)
     params.seed = 1
-    params.s_dim = 33
-    params.a_dim = 4
     params.wd_a = 0
-    # params.wd_c = 0.001
-    params.wd_c = 0
-    # params.lr_c = 1e-3
-    params.lr_c = 1e-4
+    params.wd_c = 0.0001
+    params.lr_c = 1e-3
     params.lr_a = 1e-4
     params.batch_size = 128
     params.gamma = 0.99
     params.tau = 1e-3
-    params.max_t = 30000
-    params.mem_disabled = False
     return params
 
 
@@ -39,7 +33,7 @@ def hyper_space_sc_rec(map, keys):
 def hyper_space_ns(params={'lr': [5e-8, 5e-1]}):
     all_keys = list(params.keys())
     for data in hyper_space_sc_rec(params, all_keys):
-        properties = HyperParams()
+        properties = default()
         for key in data:
             setattr(properties, key, data[key])
         yield properties

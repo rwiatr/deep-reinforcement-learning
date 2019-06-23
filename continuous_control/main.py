@@ -1,68 +1,28 @@
-import gym
+from os.path import expanduser
+from drl.env import EnvHelper
+from drl.unity.env import SingleBrainEnv
+import drl.hyperparams as hp
+import drl.agent.DDPG as ddpg
 import torch
 
-import bkp.ddpg_agent
-import drl.agent.DDPG as ddpg
-import drl.agent.base
-import drl.agent.original.ddpg_agent as ddpg_agent
-from drl.agent.utils import OUNoise
-from pendulum.pendulum_env import EnvHelper
-from unityagents import UnityEnvironment
-from os.path import expanduser
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# env = SingleBrainEnv(expanduser("~") + '/Reacher_Linux_NoVis_one_agent/Reacher.x86_64')
+env = SingleBrainEnv(expanduser("~") + '/Reacher_multi.app')
+helper = EnvHelper(env)
+parameters = {
+    'seed': [311, 13],
+    'batch_size': [128, 512, 1024],
+    'lr_c': [1e-6, 1e-4, 1e-3],
+    'lr_a': [1e-6, 1e-4, 1e-3],
+    'wd_a': [0, 0.001],
+    'wd_c': [0, 0.001]
+}
 
-from continuous_control.cc_env import EnvAccessor, EnvHelper, EnvHelperMultiAgent2, \
-    OpenAiEnvAccessor, OpenAiEnvAccessorMulti
-
-from drl.agent.utils import OUNoise
-import drl.agent.original.ddpg_agent as ddpg_agent
-import drl.agent.DDPG as ddpg
-import drl.agent.base as base
-
-for conf in base.hyper_space(params={'batch_size': [32, 512]}, n=4):
-    # BUFFER_SIZE = int(1e6)  # replay buffer size
-    # BATCH_SIZE = 128  # minibatch size
-    # GAMMA = 0.99  # discount factor
-    # TAU = 1e-3  # for soft update of target parameters
-    # LR_ACTOR = 1e-4  # learning rate of the actor
-    # LR_CRITIC = 3e-4  # learning rate of the critic
-    # WEIGHT_DECAY = 0.0001  # L2 weight decay
-    conf.buffer_size = int(1e6)
-    conf.seed = 1
+for idx, conf in enumerate(hp.hyper_space_ns(parameters)):
+    print('%d --------------------------------------------------------------' % idx)
     conf.s_dim = 33
     conf.a_dim = 4
-    conf.wd_a = 0
-    conf.wd_c = 0.001
-    # conf.s_dim = 3
-    # conf.a_dim = 1
-    conf.lr_c = 1e-3
-    conf.lr_a = 1e-4
-    conf.noise = OUNoise(conf.a_dim, conf.seed).reset()
-    conf.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    conf.batch_size = 128
-    conf.gamma = 0.99
-    conf.tau = 1e-3
-    conf.max_t = 30000
-    conf.mem_disabled = False
-
-    # accessor = OpenAiEnvAccessor('Pendulum-v0')
-    # helper = EnvHelper(accessor)
-    # agent = ddpg.Agent(conf)
-    # agent = ddpg_agent.Agent(conf)
-
-    # accessor = OpenAiEnvAccessorMulti('Pendulum-v0')
-    # agent = base.SharedMemAgent(conf, [ddpg_agent.Agent(conf)])
-    agent = bkp.ddpg_agent.Agent(conf)
-    # agent = sm.Agent(conf, [ddpg.Agent(conf)])
-
-    home = expanduser("~")
-    path = home + '/Reacher_multi.app'
-    path = home + '/Reacher.app'
-    env = UnityEnvironment(file_name=path)
-    accessor = EnvAccessor(env)
-
-    accessor.set_train_mode(True)
-    # agent = multi_ddpg_with_shared_mem(conf, 1)
-    helper = EnvHelperMultiAgent2(accessor, only_first=isinstance(agent, bkp.ddpg_agent.Agent))
-    print(agent)
-    helper.set_agent(agent)
-    helper.run_until(1000, print_every=5)
+    print(conf)
+    helper.set_agents(ddpg.Agent(conf, device, env.get_num_agents()))
+    helper.run_until(episodes=60, print_every=60)
+    print('----------------------------------------------------------------')

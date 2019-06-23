@@ -45,13 +45,8 @@ class Agent(BaseAgent):
         # ### UPDATE CRITIC LOCAL ### #
         next_actions = self.target.actor(next_states)  # u'(s_t+1) = ~a_t+2
         # calculate the prediction for the next_Q_targets (cumulative reward from next step)
-        # print(next_states.shape)
-        # print(next_actions.shape)
         next_q_targets = self.target.critic(next_states, next_actions)  # Q'(s_t+1, ~a_t+2)
         # cumulative reward from this step is reward + discounted cumulative reward from next step (next_Q_targets)
-        # print(rewards.shape)
-        # print(dones.shape)
-        # print(next_q_targets.shape)
         q_targets = rewards + (self.conf.gamma * next_q_targets * (1 - dones))
 
         # Q(s_t, a_t)
