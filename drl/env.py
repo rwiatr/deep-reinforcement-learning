@@ -51,7 +51,7 @@ class EnvHelper:
     def load(self, name=None):
         self.agents.load('saved', name)
 
-    def run_until(self, episodes=None, max_t=int('inf'), target_mean_reward=float('inf'), print_every=1,
+    def run_until(self, episodes=None, max_t=None, target_mean_reward=float('inf'), print_every=1,
                   depths=(100, 10)):
         episode = 1
         scores_a_deque = deque(maxlen=depths[0])
@@ -65,7 +65,7 @@ class EnvHelper:
             score = np.zeros(self.env.num_agents())
             steps = 0
 
-            for t in range(max_t):
+            while True:
                 action = self.agents.act(state)
                 next_state, reward, done, _ = self.env.step(action)
                 state = next_state
@@ -73,6 +73,9 @@ class EnvHelper:
                 steps += 1
 
                 if np.any(done):
+                    break
+
+                if max_t and steps >= max_t:
                     break
 
             scores_a_deque.append(score)
