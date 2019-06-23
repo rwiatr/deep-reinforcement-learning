@@ -70,6 +70,8 @@ class EnvHelper:
             while True:
                 action = self.agents.act(state)
                 next_state, reward, done, _ = self.env.step(action)
+                self.agents.step(state, action, reward, next_state, done)
+
                 state = next_state
                 score += reward
                 steps += 1
