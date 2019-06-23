@@ -2,9 +2,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from drl.agent.base import BaseAgent
 from drl.agent.utils import unmap, ReplayBuffer, OUNoise
 # from drl.dql.dqn_agent import ReplayBuffer
+from drl.env import BaseAgent
 from drl.network.head import vanilla_acn
 
 
@@ -12,8 +12,8 @@ class Agent(BaseAgent):
 
     def __init__(self, conf):
         super().__init__(conf)
-        if not conf.mem_disabled:
-            self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
+        # if not conf.mem_disabled:
+        self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
         # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
         self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
         self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
@@ -26,8 +26,8 @@ class Agent(BaseAgent):
         with torch.no_grad():
             action = self.local(state).cpu().data.numpy()
         self.local.train()
-        if self.conf.noise:
-            action += self.conf.noise.sample()
+
+        action += self.noise.sample()
 
         return np.clip(action, -1, 1)
 

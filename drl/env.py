@@ -26,21 +26,23 @@ class BaseAgent:
 class Env:
     def reset(self):
         """ resets the environment """
+        raise NotImplemented()
 
     def step(self, actions):
         """ makes one step in the environment by n agents denoted by actions """
-        return (None, None, None, None)
+        raise NotImplemented()
 
-    def num_agents(self):
+    def get_num_agents(self):
         """ returns the number of agents living in environment"""
-        return 0
+        raise NotImplemented()
 
 
 class EnvHelper:
 
-    def __init__(self, env: Env, score_plot=ScorePlot()):
+    def __init__(self, env: Env, score_plot=ScorePlot(), save_best=False):
         self.env = env
         self.score_plot = score_plot
+        self.save_best = save_best
         self.agents = None
         self.name = None
 
@@ -62,7 +64,7 @@ class EnvHelper:
         while True:
             state = self.env.reset()
             self.agents.reset()
-            score = np.zeros(self.env.num_agents())
+            score = np.zeros(self.env.get_num_agents())
             steps = 0
 
             while True:
@@ -78,29 +80,22 @@ class EnvHelper:
                 if max_t and steps >= max_t:
                     break
 
-            scores_a_deque.append(score)
-            scores_b_deque.append(score)
+            mean_score = np.mean(score)
+            scores_a_deque.append(mean_score)
+            scores_b_deque.append(mean_score)
+            scores.append(mean_score)
 
-            scores.append(np.mean(score))
-
-            print('\rEpisode {}\tAverage Score ({:d}): {:.2f}'
-                  '\tAverage Score ({:d}): {:.2f}\tScore: {:.2f}\tSteps: {:d}'
-                  .format(episode,
-                          depths[0], np.mean(scores_a_deque),
-                          depths[1], np.mean(scores_b_deque),
-                          score, steps), end="")
+            pattern = '\rEpisode {}\tAverage Score {:d}: {:.2f}\tAverage Score {:d}: {:.2f}\tScore: {:.2f}\tSteps: {:d}'
+            print(pattern.format(episode, depths[0], np.mean(scores_a_deque),
+                                 depths[1], np.mean(scores_b_deque), mean_score, steps), end="")
             if episode % print_every == 0:
-                print(
-                    '\rEpisode {}\tAverage Score ({:d}): {:.2f}'
-                    '\tAverage Score ({:d}): {:.2f}\tScore: {:.2f}\tSteps: {:d}'
-                        .format(episode,
-                                depths[0], np.mean(scores_a_deque),
-                                depths[1], np.mean(scores_b_deque),
-                                score, steps))
+                print(pattern.format(episode, depths[0], np.mean(scores_a_deque),
+                                     depths[1], np.mean(scores_b_deque), mean_score, steps))
 
             if max_mean < np.mean(scores_b_deque):
                 max_mean = np.mean(scores_b_deque)
-                self.agents.save("saved", self.name)
+                if self.save_best:
+                    self.agents.save("saved", self.name)
 
             if episode == episodes or np.mean(scores_a_deque) >= target_mean_reward:
                 break
