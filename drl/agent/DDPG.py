@@ -2,21 +2,21 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from drl.agent.utils import unmap, ReplayBuffer2, OUNoise
+from drl.agent.utils import ReplayBuffer2, OUNoise
 from drl.env import BaseAgent
 from drl.network.head import default_acn
 
 
 class Agent(BaseAgent):
 
-    def __init__(self, conf, device):
+    def __init__(self, conf, device, n_agents):
         super().__init__(conf)
         self.device = device
         self.memory = ReplayBuffer2(conf.buffer_size, conf.seed, device)
         self.target = default_acn(conf.s_dim, conf.a_dim).to(device)
         self.local = default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
             .to(device)
-        self.noise = OUNoise(conf.a_dim, conf.seed)
+        self.noise = OUNoise((n_agents, conf.a_dim), conf.seed)
 
     def act(self, state):
         state = torch.from_numpy(state).float().to(self.device)
@@ -30,12 +30,11 @@ class Agent(BaseAgent):
         return np.clip(action, -1, 1)
 
     def step(self, state, action, reward, next_state, done):
-        self.memory.add(state, action, reward, next_state, done)
+        for idx in range(len(state)):
+            self.memory.add(state[idx, :], action[idx], reward[idx], next_state[idx, :], done[idx])
 
         if len(self.memory) > self.conf.batch_size:
             sample = self.memory.sample(self.conf.batch_size)
-            # sample = torch.from_numpy(sample).to(self.device)
-            # sample = self.memory.sample()
             self.learn(sample)
 
     def reset(self):
@@ -43,12 +42,16 @@ class Agent(BaseAgent):
 
     def learn(self, experiences):
         states, actions, rewards, next_states, dones = experiences
-
         # ### UPDATE CRITIC LOCAL ### #
         next_actions = self.target.actor(next_states)  # u'(s_t+1) = ~a_t+2
         # calculate the prediction for the next_Q_targets (cumulative reward from next step)
+        # print(next_states.shape)
+        # print(next_actions.shape)
         next_q_targets = self.target.critic(next_states, next_actions)  # Q'(s_t+1, ~a_t+2)
         # cumulative reward from this step is reward + discounted cumulative reward from next step (next_Q_targets)
+        # print(rewards.shape)
+        # print(dones.shape)
+        # print(next_q_targets.shape)
         q_targets = rewards + (self.conf.gamma * next_q_targets * (1 - dones))
 
         # Q(s_t, a_t)

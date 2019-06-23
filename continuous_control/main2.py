@@ -7,7 +7,7 @@ import torch
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # env = SingleBrainEnv(expanduser("~") + '/Reacher_Linux_NoVis_one_agent/Reacher.x86_64')
-env = SingleBrainEnv(expanduser("~") + '/Reacher.app')
+env = SingleBrainEnv(expanduser("~") + '/Reacher_multi.app')
 helper = EnvHelper(env)
-helper.set_agents(ddpg.Agent(hp.default(), device))
+helper.set_agents(ddpg.Agent(hp.default(), device, env.get_num_agents()))
 helper.run_until(episodes=100)
