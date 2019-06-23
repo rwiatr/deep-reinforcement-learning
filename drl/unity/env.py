@@ -16,7 +16,7 @@ class SingleBrainEnv(Env):
         self.train_mode = train_mode
 
     def reset(self):
-        env_info = self.env.reset(train_mode=self.train_mode)[self.brain_name]  # reset the environment
+        env_info = self.env.reset(train_mode=self.train_mode)[self.brain_name]
         return env_info.vector_observations
 
     def step(self, actions):
@@ -25,3 +25,6 @@ class SingleBrainEnv(Env):
 
     def get_num_agents(self):
         return self.num_agents
+
+    def close(self):
+        self.env.close()

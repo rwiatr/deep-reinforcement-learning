@@ -33,7 +33,11 @@ class Env:
         raise NotImplemented()
 
     def get_num_agents(self):
-        """ returns the number of agents living in environment"""
+        """ returns the number of agents living in environment """
+        raise NotImplemented()
+
+    def close(self):
+        """ closes the environment """
         raise NotImplemented()
 
 

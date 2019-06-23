@@ -27,8 +27,10 @@ class FCNet(nn.Module):
     actv = list of activation functions
     """
 
-    def __init__(self, l_dims=(64, 64), actv=F.relu):
+    def __init__(self, l_dims=(64, 64), actv=F.relu, seed=None):
         super(FCNet, self).__init__()
+        if seed:
+            self.seed = torch.manual_seed(seed)
         self.layers = nn.ModuleList(
             [init_layer(nn.Linear(_in, _out)) for _in, _out in zip(l_dims[:-1], l_dims[1:])]
         )
