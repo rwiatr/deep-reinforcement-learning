@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from drl.agent.utils import unmap, ReplayBuffer, OUNoise
 # from drl.dql.dqn_agent import ReplayBuffer
 from drl.env import BaseAgent
-from drl.network.head import vanilla_acn
+from drl.network.head import default_acn
 
 
 class Agent(BaseAgent):
@@ -15,8 +15,8 @@ class Agent(BaseAgent):
         # if not conf.mem_disabled:
         self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
         # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
-        self.target = vanilla_acn(conf.s_dim, conf.a_dim).to(conf.device)
-        self.local = vanilla_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
+        self.target = default_acn(conf.s_dim, conf.a_dim).to(conf.device)
+        self.local = default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
             .to(conf.device)
         self.noise = OUNoise(conf.a_dim, conf.seed)
 

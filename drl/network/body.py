@@ -15,21 +15,20 @@ def unwrap(items, n):
         return [items] * n
 
 
-def init_layer(layer, w_scale=1.0):
-    nn.init.orthogonal_(layer.weight.data)
-    layer.weight.data.mul_(w_scale)
-    nn.init.constant_(layer.bias.data, 0)
-    return layer
-
-
 class LayerInitializer:
     def init_layers(self, layers):
         raise NotImplemented()
 
 
 class OrthogonalInitializer(LayerInitializer):
+    def init_layer(self, layer, w_scale=1.0):
+        nn.init.orthogonal_(layer.weight.data)
+        layer.weight.data.mul_(w_scale)
+        nn.init.constant_(layer.bias.data, 0)
+        return layer
+
     def init_layers(self, layers):
-        return [init_layer(layer) for layer in layers]
+        return [self.init_layer(layer) for layer in layers]
 
 
 class UInitializer(LayerInitializer):
@@ -72,35 +71,35 @@ class FCNet(nn.Module):
         return x
 
 
-def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 300, 150, 1), actv=(F.relu, F.relu, None),
-                          action_cat=1, seed=None):
-    fc_units = list(fc_units)
-    fc_units[0] = s_dim  # s_dim is input dimensions
-    return ActionFCNet(l_dims=tuple(fc_units), actv=actv, a_dim=a_dim, action_cat=action_cat, seed=seed)
+# def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 400, 300, 1), actv=(F.relu, F.relu, None),
+#                           action_cat=1, seed=None):
+#     fc_units = list(fc_units)
+#     fc_units[0] = s_dim  # s_dim is input dimensions
+#     return ActionFCNet(l_dims=tuple(fc_units), actv=actv, a_dim=a_dim, action_cat=action_cat, seed=seed)
 
 
-class ActionFCNet2(nn.Module):
-
-    def __init__(self, state_size, action_size, seed, fcs1_units=300, fc2_units=150,
-                 layer_initializer=UInitializer()):
-        super(ActionFCNet2, self).__init__()
-        self.seed = torch.manual_seed(seed)
-
-        layers = list(layer_initializer.init_layers(
-            [nn.Linear(state_size, fcs1_units),
-             nn.Linear(fcs1_units + action_size, fc2_units),
-             nn.Linear(fc2_units, 1)]
-        ))
-
-        self.fcs1 = layers[0]
-        self.fc2 = layers[1]
-        self.fc3 = layers[2]
-
-    def forward(self, state, action):
-        xs = F.relu(self.fcs1(state))
-        x = torch.cat((xs, action), dim=1)
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)
+# class ActionFCNet2(nn.Module):
+#
+#     def __init__(self, state_size, action_size, seed, fcs1_units=300, fc2_units=150,
+#                  layer_initializer=UInitializer()):
+#         super(ActionFCNet2, self).__init__()
+#         self.seed = torch.manual_seed(seed)
+#
+#         layers = list(layer_initializer.init_layers(
+#             [nn.Linear(state_size, fcs1_units),
+#              nn.Linear(fcs1_units + action_size, fc2_units),
+#              nn.Linear(fc2_units, 1)]
+#         ))
+#
+#         self.fcs1 = layers[0]
+#         self.fc2 = layers[1]
+#         self.fc3 = layers[2]
+#
+#     def forward(self, state, action):
+#         xs = F.relu(self.fcs1(state))
+#         x = torch.cat((xs, action), dim=1)
+#         x = F.relu(self.fc2(x))
+#         return self.fc3(x)
 
 
 class ActionFCNet(nn.Module):

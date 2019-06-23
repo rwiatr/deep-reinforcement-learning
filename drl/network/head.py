@@ -2,15 +2,17 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from drl.network.body import FCNet, vanilla_action_fc_net
+from drl.network.body import FCNet, ActionFCNet
 import torch.nn.functional as F
 
 
-def vanilla_acn(s_dim, a_dim, lr_a=None, lr_c=None, wd_a=0, wd_c=0, seed=None):
-    actor_net = FCNet(l_dims=(s_dim, 300, 150, a_dim), actv=(F.relu, F.relu, F.tanh), seed=seed)
-    critic_net = vanilla_action_fc_net(s_dim, a_dim, seed=seed)
+def default_acn(s_dim, a_dim, lr_a=None, lr_c=None, wd_a=0, wd_c=0, seed=None):
+    actor_net = FCNet(l_dims=(s_dim, 400, 300, a_dim), actv=(F.relu, F.relu, F.tanh), seed=seed)
+    critic_net = ActionFCNet(l_dims=(s_dim, 400, 300, 1), actv=(F.relu, F.relu, None),
+                             a_dim=a_dim, action_cat=1, seed=seed)
     actor_opt = None if lr_a is None else optim.Adam(actor_net.parameters(), lr=lr_a, weight_decay=wd_a)
     critic_opt = None if lr_c is None else optim.Adam(critic_net.parameters(), lr=lr_c, weight_decay=wd_c)
+
     return ActorCriticNet(
         actor_net=actor_net,
         critic_net=critic_net,
