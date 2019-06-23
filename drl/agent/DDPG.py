@@ -3,7 +3,6 @@ import torch
 import torch.nn.functional as F
 
 from drl.agent.utils import unmap, ReplayBuffer2, OUNoise
-# from drl.dql.dqn_agent import ReplayBuffer
 from drl.env import BaseAgent
 from drl.network.head import default_acn
 
@@ -43,8 +42,7 @@ class Agent(BaseAgent):
         self.noise.reset()
 
     def learn(self, experiences):
-        # states, actions, rewards, next_states, dones = experiences
-        states, actions, rewards, next_states, dones = unmap(experiences, self.conf.s_dim, self.conf.a_dim)
+        states, actions, rewards, next_states, dones = experiences
 
         # ### UPDATE CRITIC LOCAL ### #
         next_actions = self.target.actor(next_states)  # u'(s_t+1) = ~a_t+2
