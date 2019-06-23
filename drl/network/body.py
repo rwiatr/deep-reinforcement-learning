@@ -45,10 +45,11 @@ class FCNet(nn.Module):
         return x
 
 
-def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 400, 300, 1), actv=(F.relu, F.relu, None), action_cat=1):
+def vanilla_action_fc_net(s_dim, a_dim, fc_units=(0, 300, 150, 1), actv=(F.relu, F.relu, None), action_cat=1,
+                          seed=None):
     fc_units = list(fc_units)
     fc_units[0] = s_dim  # s_dim is input dimensions
-    return ActionFCNet(l_dims=tuple(fc_units), actv=actv, a_dim=a_dim, action_cat=action_cat)
+    return ActionFCNet(l_dims=tuple(fc_units), actv=actv, a_dim=a_dim, action_cat=action_cat, seed=seed)
 
 
 class ActionFCNet(nn.Module):
@@ -57,8 +58,10 @@ class ActionFCNet(nn.Module):
     actv = list of activation functions
     """
 
-    def __init__(self, l_dims=(64, 64), actv=F.relu, a_dim=0, action_cat=1):
+    def __init__(self, l_dims=(64, 64), actv=F.relu, a_dim=0, action_cat=1, seed=None):
         super(ActionFCNet, self).__init__()
+        if seed:
+            self.seed = torch.manual_seed(seed)
         self.layers = nn.ModuleList(
             [init_layer(nn.Linear(_in if idx != action_cat else _in + a_dim, _out))
              for idx, (_in, _out) in enumerate(zip(l_dims[:-1], l_dims[1:]))]
