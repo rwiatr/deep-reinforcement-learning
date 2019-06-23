@@ -109,13 +109,14 @@ class ActionFCNet(nn.Module):
     actv = list of activation functions
     """
 
-    def __init__(self, l_dims=(64, 64), actv=F.relu, a_dim=0, action_cat=1, seed=None):
+    def __init__(self, l_dims=(64, 64), actv=F.relu, a_dim=0, action_cat=1, seed=None,
+                 layer_initializer=UInitializer()):
         super(ActionFCNet, self).__init__()
         if seed:
             self.seed = torch.manual_seed(seed)
         self.layers = nn.ModuleList(
-            [init_layer(nn.Linear(_in if idx != action_cat else _in + a_dim, _out))
-             for idx, (_in, _out) in enumerate(zip(l_dims[:-1], l_dims[1:]))]
+            layer_initializer.init_layers([nn.Linear(_in if idx != action_cat else _in + a_dim, _out)
+                                           for idx, (_in, _out) in enumerate(zip(l_dims[:-1], l_dims[1:]))])
         )
         self.activations = unwrap(actv, len(l_dims))
         self.action_cat = action_cat
