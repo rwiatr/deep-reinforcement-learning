@@ -16,15 +16,16 @@ def default():
     params.s_dim = 33
     params.a_dim = 4
     params.wd_a = 0
-    params.wd_c = 0.001
-    params.lr_c = 1e-3
+    # params.wd_c = 0.001
+    params.wd_c = 0
+    # params.lr_c = 1e-3
+    params.lr_c = 1e-4
     params.lr_a = 1e-4
     params.batch_size = 128
     params.gamma = 0.99
     params.tau = 1e-3
     params.max_t = 30000
     params.mem_disabled = False
-    params.device = 'cpu'  # TODO move deice out of hyperparams
     return params
 
 

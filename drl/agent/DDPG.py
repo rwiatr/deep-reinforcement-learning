@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from drl.agent.utils import unmap, ReplayBuffer, OUNoise
+from drl.agent.utils import unmap, ReplayBuffer2, OUNoise
 # from drl.dql.dqn_agent import ReplayBuffer
 from drl.env import BaseAgent
 from drl.network.head import default_acn
@@ -10,18 +10,17 @@ from drl.network.head import default_acn
 
 class Agent(BaseAgent):
 
-    def __init__(self, conf):
+    def __init__(self, conf, device):
         super().__init__(conf)
-        # if not conf.mem_disabled:
-        self.memory = ReplayBuffer(conf.buffer_size, conf.s_dim, conf.a_dim, conf.seed)
-        # self.memory = ReplayBuffer(conf.a_dim, conf.buffer_size, conf.batch_size, conf.seed)
-        self.target = default_acn(conf.s_dim, conf.a_dim).to(conf.device)
+        self.device = device
+        self.memory = ReplayBuffer2(conf.buffer_size, conf.seed, device)
+        self.target = default_acn(conf.s_dim, conf.a_dim).to(device)
         self.local = default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
-            .to(conf.device)
+            .to(device)
         self.noise = OUNoise(conf.a_dim, conf.seed)
 
     def act(self, state):
-        state = torch.from_numpy(state).float().to(self.conf.device)
+        state = torch.from_numpy(state).float().to(self.device)
         self.local.eval()
         with torch.no_grad():
             action = self.local(state).cpu().data.numpy()
@@ -36,7 +35,7 @@ class Agent(BaseAgent):
 
         if len(self.memory) > self.conf.batch_size:
             sample = self.memory.sample(self.conf.batch_size)
-            sample = torch.from_numpy(sample).to(self.conf.device)
+            # sample = torch.from_numpy(sample).to(self.device)
             # sample = self.memory.sample()
             self.learn(sample)
 
