@@ -23,6 +23,8 @@ The interesting thing happens after this point. The score goes down slightly as 
 some of its past experience.
 ![](result.png)
 
+The second plot shows the stability of the agent over 200 episodes.
+![](result2.png)
 ### Hyperparameters
 Hyperparameters were generated with using sampling of hyperparameters space and
 then I selected hyperparameters that gave the best effect:
