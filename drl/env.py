@@ -36,6 +36,12 @@ class Env:
         """ returns the number of agents living in environment """
         raise NotImplemented()
 
+    def get_action_dim(self):
+        raise NotImplemented()
+
+    def get_state_dim(self):
+        raise NotImplemented()
+
     def close(self):
         """ closes the environment """
         raise NotImplemented()
