@@ -7,9 +7,10 @@ class SingleBrainEnv(Env):
 
     def __init__(self, env_path, train_mode=True):
         self.env = unityagents.UnityEnvironment(file_name=env_path)
+        self.brain_name = self.env.brain_names[0]
+
         env_info = self.env.reset(train_mode=True)[self.brain_name]
 
-        self.brain_name = self.env.brain_names[0]
         self.brain = self.env.brains[self.brain_name]
         self.num_agents = len(env_info.agents)
         self.action_dim = self.brain.vector_action_space_size
