@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 def acn(a_dim, a_l_dims, c_l_dims, lr_a=None, lr_c=None, wd_a=0, wd_c=0, seed=None):
     a_actv = list([F.relu for _ in range(len(a_l_dims) - 2)]) + [F.tanh]
-    c_actv = list([F.relu for _ in range(len(a_l_dims) - 2)]) + [None]
+    c_actv = list([F.relu for _ in range(len(c_l_dims) - 2)]) + [None]
 
     actor_net = FCNet(l_dims=a_l_dims, actv=a_actv, seed=seed)
     critic_net = ActionFCNet(l_dims=c_l_dims, actv=c_actv, a_dim=a_dim, action_cat=1, seed=seed)
