@@ -13,12 +13,12 @@ class Agent(BaseAgent):
         super().__init__(conf)
         self.device = device
         self.memory = ReplayBuffer2(conf.buffer_size, conf.seed, device)
-        self.target = acn(conf.a_dim, conf.t_a_l_dims, conf.t_c_l_dims).to(device) \
-            if hasattr(conf, 'custom_target') and conf.custom_target \
+        self.target = acn(conf.a_dim, conf.a_l_dims, conf.c_l_dims).to(device) \
+            if hasattr(conf, 'custom_acn') and conf.custom_acn \
             else default_acn(conf.s_dim, conf.a_dim).to(device)
-        self.local = acn(conf.a_dim, conf.l_a_l_dims, conf.l_c_l_dims, conf.lr_a, conf.lr_c, wd_a=conf.wd_a,
+        self.local = acn(conf.a_dim, conf.a_l_dims, conf.c_l_dims, conf.lr_a, conf.lr_c, wd_a=conf.wd_a,
                          wd_c=conf.wd_c).to(device) \
-            if hasattr(conf, 'custom_local') and conf.custom_local \
+            if hasattr(conf, 'custom_acn') and conf.custom_acn \
             else default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c).to(device)
         self.noise = OUNoise((n_agents, conf.a_dim), conf.seed)
 
