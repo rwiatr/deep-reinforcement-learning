@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 from drl.agent.utils import ReplayBuffer2, OUNoise
 from drl.env import BaseAgent
-from drl.network.head import default_acn
+from drl.network.head import default_acn, acn
 
 
 class Agent(BaseAgent):
@@ -13,9 +13,13 @@ class Agent(BaseAgent):
         super().__init__(conf)
         self.device = device
         self.memory = ReplayBuffer2(conf.buffer_size, conf.seed, device)
-        self.target = default_acn(conf.s_dim, conf.a_dim).to(device)
-        self.local = default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c) \
-            .to(device)
+        self.target = acn(conf.a_dim, conf.t_a_l_dims, conf.t_c_l_dims).to(device) \
+            if hasattr(conf, 'custom_target') and conf.custom_target \
+            else default_acn(conf.s_dim, conf.a_dim).to(device)
+        self.local = acn(conf.a_dim, conf.l_a_l_dims, conf.l_c_l_dims, conf.lr_a, conf.lr_c, wd_a=conf.wd_a,
+                         wd_c=conf.wd_c).to(device) \
+            if hasattr(conf, 'custom_local') and conf.custom_local \
+            else default_acn(conf.s_dim, conf.a_dim, conf.lr_a, conf.lr_c, wd_a=conf.wd_a, wd_c=conf.wd_c).to(device)
         self.noise = OUNoise((n_agents, conf.a_dim), conf.seed)
 
     def act(self, state):

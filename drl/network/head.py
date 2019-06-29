@@ -6,6 +6,22 @@ from drl.network.body import FCNet, ActionFCNet
 import torch.nn.functional as F
 
 
+def acn(a_dim, a_l_dims, c_l_dims, lr_a=None, lr_c=None, wd_a=0, wd_c=0, seed=None):
+    a_actv = list([F.relu for _ in a_l_dims[-1]]) + [F.tanh]
+    c_actv = list([F.relu for _ in c_l_dims[-1]]) + [None]
+
+    actor_net = FCNet(l_dims=a_l_dims, actv=a_actv, seed=seed)
+    critic_net = ActionFCNet(l_dims=c_l_dims, actv=c_actv, a_dim=a_dim, action_cat=1, seed=seed)
+    actor_opt = None if lr_a is None else optim.Adam(actor_net.parameters(), lr=lr_a, weight_decay=wd_a)
+    critic_opt = None if lr_c is None else optim.Adam(critic_net.parameters(), lr=lr_c, weight_decay=wd_c)
+
+    return ActorCriticNet(
+        actor_net=actor_net,
+        critic_net=critic_net,
+        actor_opt=actor_opt,
+        critic_opt=critic_opt)
+
+
 def default_acn(s_dim, a_dim, lr_a=None, lr_c=None, wd_a=0, wd_c=0, seed=None):
     actor_net = FCNet(l_dims=(s_dim, 400, 300, a_dim), actv=(F.relu, F.relu, F.tanh), seed=seed)
     critic_net = ActionFCNet(l_dims=(s_dim, 400, 300, 1), actv=(F.relu, F.relu, None),

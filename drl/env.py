@@ -49,10 +49,11 @@ class Env:
 
 class EnvHelper:
 
-    def __init__(self, env: Env, score_plot=ScorePlot(), save_best=False):
+    def __init__(self, env: Env, score_plot=ScorePlot(), save_best=False, agent_score_f=np.mean):
         self.env = env
         self.score_plot = score_plot
         self.save_best = save_best
+        self.agent_score_f = agent_score_f
         self.agents = None
         self.name = None
 
@@ -92,17 +93,18 @@ class EnvHelper:
                 if max_t and steps >= max_t:
                     break
 
-            mean_score = np.mean(score)
-            scores_a_deque.append(mean_score)
-            scores_b_deque.append(mean_score)
-            scores.append(mean_score)
+            agent_score = self.agent_score_f(score)
+            scores_a_deque.append(agent_score)
+            scores_b_deque.append(agent_score)
+            scores.append(agent_score)
 
-            pattern = '\rEpisode {}\tAverage Score {:d}: {:.2f}\tAverage Score {:d}: {:.2f}\tScore: {:.2f}\tSteps: {:d}'
+            pattern = '\rEpisode {}\tAgent Score {:d}: {:.2f}\tAgent Score {:d}: {:.2f}' \
+                      '\tScore: {:.2f}\tSteps: {:d}\t#####'
             print(pattern.format(episode, depths[0], np.mean(scores_a_deque),
-                                 depths[1], np.mean(scores_b_deque), mean_score, steps), end="")
+                                 depths[1], np.mean(scores_b_deque), agent_score, steps), end="")
             if episode % print_every == 0:
                 print(pattern.format(episode, depths[0], np.mean(scores_a_deque),
-                                     depths[1], np.mean(scores_b_deque), mean_score, steps))
+                                     depths[1], np.mean(scores_b_deque), agent_score, steps))
 
             if max_mean < np.mean(scores_b_deque):
                 max_mean = np.mean(scores_b_deque)
