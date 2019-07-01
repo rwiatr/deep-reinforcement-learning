@@ -17,7 +17,7 @@ Both, Critic and Actor design was based on the [original paper](https://arxiv.or
 For the Actor I used a fully connected network with two layers: 24x256 and 256x2. 
 For the Critic I used a fully connected network with five layers: 24x256, 256(+2 action)x256, 256x128 and 128x1.
 ## Result
-It took 1571 episodes to achieve the score of 51. The agent was cut off after reaching this target.
+It took 1571 episodes to achieve the score of 0.51. The agent was cut off after reaching this target.
 ![](result.png)
 
 During the experiment I found that it is challenging to predict if an agent will be able to start learning.
