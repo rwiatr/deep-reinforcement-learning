@@ -19,6 +19,7 @@ For the Critic I used a fully connected network with five layers: 24x256, 256(+2
 ## Result
 It took 1571 episodes to achieve the score of 51. The agent was cut off after reaching this target.
 ![](result.png)
+
 During the experiment I found that it is challenging to predict if an agent will be able to start learning.
 In some cases it took 2000 iterations to train an agent while in other cases it took over 5000.
 ### Hyperparameters
